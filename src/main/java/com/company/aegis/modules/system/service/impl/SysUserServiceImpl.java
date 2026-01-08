@@ -29,6 +29,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
     }
 
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     @Override
     public java.util.List<Long> getRoleIdsByUserId(Long userId) {
         return baseMapper.selectRoleIdsByUserId(userId);
@@ -39,5 +41,38 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return getOne(
                 new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<com.company.aegis.modules.system.entity.SysUser>()
                         .eq(com.company.aegis.modules.system.entity.SysUser::getUsername, username));
+    }
+
+    @Override
+    public void updateProfile(Long userId, com.company.aegis.modules.system.dto.UserProfileDto dto) {
+        SysUser user = getById(userId);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        if (dto.getNickname() != null)
+            user.setNickname(dto.getNickname());
+        if (dto.getEmail() != null)
+            user.setEmail(dto.getEmail());
+        if (dto.getPhone() != null)
+            user.setPhone(dto.getPhone());
+        if (dto.getAvatar() != null)
+            user.setAvatar(dto.getAvatar());
+        updateById(user);
+    }
+
+    @Override
+    public void changePassword(Long userId, com.company.aegis.modules.system.dto.ChangePasswordDto dto) {
+        SysUser user = getById(userId);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
+            throw new RuntimeException("Old password is incorrect");
+        }
+        if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+            throw new RuntimeException("New passwords do not match");
+        }
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        updateById(user);
     }
 }

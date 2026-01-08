@@ -44,11 +44,19 @@
                  <el-icon v-if="isDark"><Moon /></el-icon>
                  <el-icon v-else><Sunny /></el-icon>
              </div>
-             <div class="user-info">
-                 <el-avatar size="small" style="background-color: var(--el-color-primary)">A</el-avatar>
-                 <span>管理员</span>
-             </div>
-             <el-button type="danger" link icon="SwitchButton" @click="handleLogout">退出登录</el-button>
+             <el-dropdown trigger="click" @command="handleUserCommand">
+                 <div class="user-info">
+                     <el-avatar size="small" style="background-color: var(--el-color-primary)">A</el-avatar>
+                     <span>管理员</span>
+                     <el-icon><ArrowDown /></el-icon>
+                 </div>
+                 <template #dropdown>
+                     <el-dropdown-menu>
+                         <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                         <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+                     </el-dropdown-menu>
+                 </template>
+             </el-dropdown>
         </div>
       </el-header>
       
@@ -68,8 +76,9 @@ import UserManagement from './views/system/user/index.vue'
 import RoleManagement from './views/system/role/index.vue'
 import MenuManagement from './views/system/menu/index.vue'
 import ApplicationManagement from './views/system/application/index.vue'
+import Profile from './views/profile/index.vue'
 import { getToken, removeToken } from './utils/auth'
-import { User, SwitchButton, Moon, Sunny, Monitor, Key, Menu as MenuIcon, Setting, Avatar, Platform, Tools } from '@element-plus/icons-vue'
+import { User, SwitchButton, Moon, Sunny, Monitor, Key, Menu as MenuIcon, Setting, Avatar, Platform, Tools, ArrowDown } from '@element-plus/icons-vue'
 
 // State
 const isLoggedIn = ref(!!getToken())
@@ -81,8 +90,16 @@ const componentMap = {
     'UserManagement': UserManagement,
     'RoleManagement': RoleManagement,
     'MenuManagement': MenuManagement,
-    'ApplicationManagement': ApplicationManagement
+    'ApplicationManagement': ApplicationManagement,
+    'Profile': Profile
 }
+
+// ... 
+
+
+
+
+
 
 // Map backend permission code/path to component key if needed, or just use code as key
 // Simple mapping: code "user:list" -> key "UserManagement"
@@ -173,6 +190,14 @@ const handleLogout = () => {
 
 const handleSelect = (key) => {
     activeMenu.value = key
+}
+
+const handleUserCommand = (command) => {
+    if (command === 'logout') {
+        handleLogout()
+    } else if (command === 'profile') {
+        activeMenu.value = 'Profile'
+    }
 }
 
 const fetchMenus = async () => {

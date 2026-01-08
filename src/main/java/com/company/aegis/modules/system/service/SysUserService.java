@@ -9,4 +9,8 @@ public interface SysUserService extends IService<SysUser> {
     java.util.List<Long> getRoleIdsByUserId(Long userId);
 
     SysUser getByUsername(String username);
+
+    void updateProfile(Long userId, com.company.aegis.modules.system.dto.UserProfileDto dto);
+
+    void changePassword(Long userId, com.company.aegis.modules.system.dto.ChangePasswordDto dto);
 }

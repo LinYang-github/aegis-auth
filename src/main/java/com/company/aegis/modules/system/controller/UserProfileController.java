@@ -41,4 +41,42 @@ public class UserProfileController {
 
         return Result.success(sysPermissionService.getMenusByUserId(user.getId(), appCode));
     }
+
+    @GetMapping("/profile")
+    public Result<SysUser> getProfile() {
+        SysUser user = getCurrentUser();
+        if (user == null) {
+            return Result.fail(401, "User not found");
+        }
+        user.setPassword(null);
+        return Result.success(user);
+    }
+
+    @org.springframework.web.bind.annotation.PutMapping("/profile")
+    public Result<Boolean> updateProfile(
+            @org.springframework.web.bind.annotation.RequestBody com.company.aegis.modules.system.dto.UserProfileDto dto) {
+        SysUser user = getCurrentUser();
+        if (user == null) {
+            return Result.fail(401, "User not found");
+        }
+        sysUserService.updateProfile(user.getId(), dto);
+        return Result.success(true);
+    }
+
+    @org.springframework.web.bind.annotation.PostMapping("/password")
+    public Result<Boolean> changePassword(
+            @org.springframework.web.bind.annotation.RequestBody com.company.aegis.modules.system.dto.ChangePasswordDto dto) {
+        SysUser user = getCurrentUser();
+        if (user == null) {
+            return Result.fail(401, "User not found");
+        }
+        sysUserService.changePassword(user.getId(), dto);
+        return Result.success(true);
+    }
+
+    private SysUser getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        return sysUserService.getByUsername(username);
+    }
 }
