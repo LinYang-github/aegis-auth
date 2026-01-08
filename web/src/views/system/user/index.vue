@@ -2,9 +2,9 @@
   <div class="view-container">
     <!-- Header -->
     <div class="header">
-      <h2>User Management</h2>
+      <h2>用户管理</h2>
       <div class="header-right">
-        <el-button type="primary" icon="Plus" @click="handleAdd">Create User</el-button>
+        <el-button type="primary" icon="Plus" @click="handleAdd">新建用户</el-button>
         <el-button icon="Refresh" circle @click="fetchData" :loading="loading" />
       </div>
     </div>
@@ -13,35 +13,35 @@
     <el-card shadow="never" class="table-card">
       <el-table :data="tableData" v-loading="loading" stripe style="width: 100%; height: 100%">
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="username" label="Username" />
-        <el-table-column prop="nickname" label="Nickname" />
-        <el-table-column prop="status" label="Status">
+        <el-table-column prop="username" label="用户名" />
+        <el-table-column prop="nickname" label="昵称" />
+        <el-table-column prop="status" label="状态">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'danger'" effect="dark">
-              {{ row.status === 1 ? 'Active' : 'Disabled' }}
+              {{ row.status === 1 ? '正常' : '禁用' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createdAt" label="Created At" width="180">
+        <el-table-column prop="createdAt" label="创建时间" width="180">
             <template #default="{ row }">
                 {{ formatTime(row.createdAt) }}
             </template>
         </el-table-column>
-        <el-table-column label="Actions" width="200" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right">
           <template #default>
-            <el-button link type="primary" size="small">Edit</el-button>
-            <el-button link type="danger" size="small">Delete</el-button>
+            <el-button link type="primary" size="small">编辑</el-button>
+            <el-button link type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
 
     <!-- Dialog Placeholder -->
-    <el-dialog v-model="dialogVisible" title="User">
-      <span>Form goes here...</span>
+    <el-dialog v-model="dialogVisible" title="用户">
+      <span>表单内容...</span>
       <template #footer>
-        <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogVisible = false">Confirm</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确认</el-button>
       </template>
     </el-dialog>
   </div>

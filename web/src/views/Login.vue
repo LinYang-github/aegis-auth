@@ -3,23 +3,23 @@
     <div class="glass-card">
       <div class="brand">
         <h1>Aegis Auth</h1>
-        <p>Enterprise Identity Solution</p>
+        <p>企业级身份认证解决方案</p>
       </div>
       
       <form @submit.prevent="handleLogin" class="login-form">
         <div class="input-group">
-          <input type="text" v-model="username" placeholder="Username" required />
+          <input type="text" v-model="username" placeholder="用户名" required />
           <span class="icon">👤</span>
         </div>
         <div class="input-group">
-          <input type="password" v-model="password" placeholder="Password" required />
+          <input type="password" v-model="password" placeholder="密码" required />
           <span class="icon">🔒</span>
         </div>
         
         <div class="actions">
           <button type="submit" :disabled="loading">
-            <span v-if="!loading">Sign In</span>
-            <span v-else>Authenticating...</span>
+            <span v-if="!loading">登录</span>
+            <span v-else>认证中...</span>
           </button>
         </div>
 
@@ -67,7 +67,7 @@ const handleLogin = async () => {
     emit('login-success');
   } catch (err) {
     console.error(err);
-    error.value = "Invalid credentials or system error.";
+    error.value = "用户名或密码错误，请重试";
   } finally {
     loading.value = false;
   }

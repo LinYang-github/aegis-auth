@@ -18,7 +18,7 @@
       >
         <el-menu-item index="UserManagement">
           <el-icon><User /></el-icon>
-          <span>User Management</span>
+          <span>用户管理</span>
         </el-menu-item>
         <!-- Add more menu items here -->
       </el-menu>
@@ -28,18 +28,18 @@
               <el-icon v-if="isDark"><Moon /></el-icon>
               <el-icon v-else><Sunny /></el-icon>
           </div>
-          <el-button type="danger" text icon="SwitchButton" @click="handleLogout">Sign Out</el-button>
+          <el-button type="danger" text icon="SwitchButton" @click="handleLogout">退出登录</el-button>
       </div>
     </el-aside>
 
     <el-container>
       <el-header class="header">
         <div class="breadcrumb">
-            System / {{ activeMenu }}
+            系统管理 / {{ activeMenu === 'UserManagement' ? '用户管理' : activeMenu }}
         </div>
         <div class="user-info">
             <el-avatar size="small" style="background-color: var(--el-color-primary)">A</el-avatar>
-            <span>Admin</span>
+            <span>管理员</span>
         </div>
       </el-header>
       
