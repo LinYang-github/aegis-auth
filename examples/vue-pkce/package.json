@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "vue-pkce",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,17 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@element-plus/icons-vue": "^2.3.2",
-    "@vueuse/core": "^14.1.0",
-    "axios": "^1.13.2",
-    "element-plus": "^2.13.0",
     "oidc-client-ts": "^3.4.1",
     "vue": "^3.5.24",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
-    "sass": "^1.97.2",
     "vite": "^7.2.4"
   }
 }

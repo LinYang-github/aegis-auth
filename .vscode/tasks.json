@@ -51,7 +51,28 @@
             "type": "shell",
             "command": "java -jar target/aegis-auth-1.0.0.jar",
             "dependsOn": "Build All (Backend + Frontend)",
-            "problemMatcher": []
+        },
+        {
+            "label": "Run Java Demo",
+            "type": "shell",
+            "command": "mvn spring-boot:run",
+            "options": {
+                "cwd": "${workspaceFolder}/examples/java-spring-boot"
+            },
+            "group": "test",
+        },
+        {
+            "label": "Run Vue Demo",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": {
+                "cwd": "${workspaceFolder}/examples/vue-pkce"
+            },
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
         }
     ]
 }

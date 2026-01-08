@@ -10,7 +10,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.stereotype.Component;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -21,11 +28,14 @@ public class DataSeeder implements CommandLineRunner {
     private final SysPermissionService sysPermissionService;
     private final SysApplicationService sysApplicationService;
     private final PasswordEncoder passwordEncoder;
+    private final RegisteredClientRepository registeredClientRepository;
 
     @Override
     public void run(String... args) throws Exception {
         initAdminUser();
         initDefaultApp();
+        initDemoClient();
+        initVueDemoClient();
         initMenus();
     }
 
@@ -53,6 +63,66 @@ public class DataSeeder implements CommandLineRunner {
             app.setStatus(1);
             sysApplicationService.save(app);
             log.info("Default 'auth' application initialized successfully.");
+        }
+    }
+
+    private void initDemoClient() {
+        String appCode = "demo-client";
+        long count = sysApplicationService.count(new LambdaQueryWrapper<SysApplication>()
+                .eq(SysApplication::getCode, appCode));
+        if (count == 0) {
+            // ... (Same as before)
+            SysApplication app = new SysApplication();
+            app.setCode(appCode);
+            app.setName("Demo Client App");
+            app.setStatus(1);
+            sysApplicationService.save(app);
+
+            RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+                    .clientId(appCode)
+                    .clientSecret(passwordEncoder.encode("demo-secret"))
+                    .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                    .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                    .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                    .redirectUri("http://127.0.0.1:8080/login/oauth2/code/aegis")
+                    .scope(OidcScopes.OPENID)
+                    .scope(OidcScopes.PROFILE)
+                    .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+                    .build();
+            registeredClientRepository.save(registeredClient);
+            log.info("Demo Client 'demo-client' initialized successfully.");
+        }
+    }
+
+    private void initVueDemoClient() {
+        String appCode = "demo-vue-client";
+        long count = sysApplicationService.count(new LambdaQueryWrapper<SysApplication>()
+                .eq(SysApplication::getCode, appCode));
+        if (count == 0) {
+            // 1. SysApplication
+            SysApplication app = new SysApplication();
+            app.setCode(appCode);
+            app.setName("Demo Vue Client (SPA)");
+            app.setStatus(1);
+            sysApplicationService.save(app);
+
+            // 2. RegisteredClient (Public / PKCE)
+            RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+                    .clientId(appCode)
+                    .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+                    .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                    .redirectUri("http://localhost:5173/callback")
+                    .postLogoutRedirectUri("http://localhost:5173/")
+                    .scope(OidcScopes.OPENID)
+                    .scope(OidcScopes.PROFILE)
+                    .clientSettings(ClientSettings.builder()
+                            .requireAuthorizationConsent(true)
+                            .requireProofKey(true) // Enforce PKCE
+                            .build())
+                    .build();
+
+            registeredClientRepository.save(registeredClient);
+            log.info("Demo Client 'demo-vue-client' initialized successfully.");
         }
     }
 

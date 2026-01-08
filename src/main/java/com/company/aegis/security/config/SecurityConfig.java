@@ -20,9 +20,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/index.html", "/assets/**", "/webjars/**", "/login", "/api/**")
+                        .requestMatchers("/", "/index.html", "/assets/**", "/webjars/**", "/login", "/api/**",
+                                "/debug/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form

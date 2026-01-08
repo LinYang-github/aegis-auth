@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: demo-client-app
+  security:
+    oauth2:
+      client:
+        registration:
+          aegis:
+            provider: aegis-auth
+            client-id: demo-client
+            client-secret: demo-secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid,profile
+            client-name: Aegis Auth Login
+        provider:
+          aegis-auth:
+            issuer-uri: http://127.0.0.1:9000
