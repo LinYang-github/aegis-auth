@@ -23,13 +23,7 @@
         <!-- Add more menu items here -->
       </el-menu>
       
-      <div class="sidebar-footer">
-          <div class="theme-switch" @click="toggleDark()">
-              <el-icon v-if="isDark"><Moon /></el-icon>
-              <el-icon v-else><Sunny /></el-icon>
-          </div>
-          <el-button type="danger" text icon="SwitchButton" @click="handleLogout">退出登录</el-button>
-      </div>
+
     </el-aside>
 
     <el-container>
@@ -37,9 +31,16 @@
         <div class="breadcrumb">
             系统管理 / {{ activeMenu === 'UserManagement' ? '用户管理' : activeMenu }}
         </div>
-        <div class="user-info">
-            <el-avatar size="small" style="background-color: var(--el-color-primary)">A</el-avatar>
-            <span>管理员</span>
+        <div class="header-right">
+             <div class="theme-switch" @click="toggleDark()">
+                 <el-icon v-if="isDark"><Moon /></el-icon>
+                 <el-icon v-else><Sunny /></el-icon>
+             </div>
+             <div class="user-info">
+                 <el-avatar size="small" style="background-color: var(--el-color-primary)">A</el-avatar>
+                 <span>管理员</span>
+             </div>
+             <el-button type="danger" link icon="SwitchButton" @click="handleLogout">退出登录</el-button>
         </div>
       </el-header>
       
@@ -133,15 +134,18 @@ onMounted(() => {
   font-size: 18px;
 }
 .sidebar-footer {
-    padding: 20px;
-    border-top: 1px solid #333;
+    display: none;
+}
+.header-right {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 16px;
 }
 .theme-switch {
     cursor: pointer;
-    color: #fff;
+    color: var(--gdos-text-primary);
+    display: flex;
+    align-items: center;
 }
 
 .header {
