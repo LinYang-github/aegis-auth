@@ -1,0 +1,28 @@
+spring:
+  # 1. 数据库配置 (SQLite)
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    # 数据库文件会自动在运行目录下生成 aegis.db
+    url: jdbc:sqlite:aegis.db 
+    username: 
+    password: 
+  
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+      continue-on-error: true
+  
+  # MyBatis Plus 兼容性设置
+  # SQLite 不支持某些高级 SQL 语法，但这通常不影响简单的认证逻辑
+  
+  # 2. 缓存配置 (Caffeine)
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=60m
+
+# 日志
+logging:
+  file:
+    name: logs/aegis-auth.log

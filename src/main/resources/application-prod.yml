@@ -1,0 +1,15 @@
+spring:
+  # 1. 数据库配置 (MySQL)
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/aegis_auth?serverTimezone=Asia/Shanghai
+    username: root
+    password: password
+  
+  # 2. 缓存配置 (Redis)
+  cache:
+    type: redis
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
