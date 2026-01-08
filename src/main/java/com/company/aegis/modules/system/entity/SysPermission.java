@@ -31,6 +31,9 @@ public class SysPermission implements Serializable {
      */
     private Integer type;
 
+    // Application Code ensures permission isolation
+    private String appCode;
+
     private String path;
 
     private String method;

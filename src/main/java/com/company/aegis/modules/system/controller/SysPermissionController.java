@@ -1,5 +1,6 @@
 package com.company.aegis.modules.system.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.company.aegis.common.result.Result;
 import com.company.aegis.modules.system.entity.SysPermission;
 import com.company.aegis.modules.system.service.SysPermissionService;
@@ -8,9 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Permission/Menu Management API
- */
 @RestController
 @RequestMapping("/api/permissions")
 @RequiredArgsConstructor
@@ -19,13 +17,14 @@ public class SysPermissionController {
     private final SysPermissionService sysPermissionService;
 
     @GetMapping
-    public Result<List<SysPermission>> list() {
+    public Result<List<SysPermission>> list(@RequestParam(required = false) String appCode) {
+        if (appCode != null && !appCode.isEmpty()) {
+            // For simplicity, we can't easily pass wrapper to listTree if it doesn't
+            // support it.
+            // We should add listTree(appCode) to service.
+            return Result.success(sysPermissionService.listTree(appCode));
+        }
         return Result.success(sysPermissionService.listTree());
-    }
-
-    @GetMapping("/{id}")
-    public Result<SysPermission> getById(@PathVariable Long id) {
-        return Result.success(sysPermissionService.getById(id));
     }
 
     @PostMapping

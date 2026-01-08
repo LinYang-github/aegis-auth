@@ -12,25 +12,21 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("sys_role")
-public class SysRole implements Serializable {
+@TableName("sys_application")
+public class SysApplication implements Serializable {
 
-    @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     private String code;
 
     private String name;
 
-    // Application Code ensures role isolation
-    private String appCode;
+    private String baseUrl;
 
-    private String description;
+    private Integer status; // 1: Enabled, 0: Disabled
 
-    /**
-     * 0: Not Deleted, 1: Deleted
-     */
     @TableLogic
     private Integer deleted;
 

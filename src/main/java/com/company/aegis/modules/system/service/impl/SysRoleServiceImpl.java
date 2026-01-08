@@ -40,4 +40,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         return list.stream().map(com.company.aegis.modules.system.entity.SysRolePermission::getPermissionId)
                 .collect(java.util.stream.Collectors.toList());
     }
+
+    @Override
+    public java.util.List<SysRole> list(String appCode) {
+        if (appCode == null || appCode.isEmpty()) {
+            return list();
+        }
+        return list(new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<SysRole>()
+                .eq(SysRole::getAppCode, appCode));
+    }
 }

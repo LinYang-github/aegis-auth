@@ -19,8 +19,8 @@ public class SysRoleController {
     private final SysRoleService sysRoleService;
 
     @GetMapping
-    public Result<List<SysRole>> list() {
-        return Result.success(sysRoleService.list());
+    public Result<List<SysRole>> list(@RequestParam(required = false) String appCode) {
+        return Result.success(sysRoleService.list(appCode));
     }
 
     @GetMapping("/{id}")

@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class UserProfileController {
     private final SysUserService sysUserService;
 
     @GetMapping("/menus")
-    public Result<List<SysPermission>> getMenus() {
+    public Result<List<SysPermission>> getMenus(@RequestParam(required = false) String appCode) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         // Since we don't have user ID in principal easily (unless we cast), let's fetch
@@ -38,6 +39,6 @@ public class UserProfileController {
             return Result.fail(401, "User not found");
         }
 
-        return Result.success(sysPermissionService.getMenusByUserId(user.getId()));
+        return Result.success(sysPermissionService.getMenusByUserId(user.getId(), appCode));
     }
 }

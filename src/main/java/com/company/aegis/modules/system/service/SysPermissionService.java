@@ -7,5 +7,7 @@ import java.util.List;
 public interface SysPermissionService extends IService<SysPermission> {
     List<SysPermission> listTree();
 
-    List<SysPermission> getMenusByUserId(Long userId);
+    List<SysPermission> listTree(String appCode);
+
+    List<SysPermission> getMenusByUserId(Long userId, String appCode);
 }

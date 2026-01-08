@@ -2,6 +2,16 @@
   <div class="view-container">
     <div class="header">
       <h2>菜单管理</h2>
+      <div class="header-left" style="margin-left: 20px;">
+          <el-select v-model="currentAppCode" placeholder="选择应用" style="width: 200px" @change="fetchData">
+              <el-option
+                v-for="item in appList"
+                :key="item.code"
+                :label="item.name"
+                :value="item.code"
+              />
+          </el-select>
+      </div>
       <div class="header-right">
         <el-button type="primary" icon="Plus" @click="handleAdd()">新建菜单</el-button>
         <el-button icon="Refresh" circle @click="fetchData" :loading="loading" />
@@ -38,6 +48,16 @@
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="所属应用" prop="appCode">
+            <el-select v-model="form.appCode" disabled placeholder="自动绑定">
+                 <el-option
+                    v-for="item in appList"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code"
+                  />
+            </el-select>
+        </el-form-item>
         <el-form-item label="父级菜单" prop="parentId">
              <el-tree-select
                 v-model="form.parentId"
@@ -88,6 +108,9 @@ const tableData = ref([]) // Tree data
 const dialogVisible = ref(false)
 const formRef = ref(null)
 
+const appList = ref([])
+const currentAppCode = ref('')
+
 const form = reactive({
   id: undefined,
   parentId: undefined,
@@ -95,21 +118,38 @@ const form = reactive({
   code: '',
   type: 1,
   path: '',
-  sortOrder: 0
+  sortOrder: 0,
+  appCode: ''
 })
 
 const rules = {
   name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
   code: [{ required: true, message: '请输入编码', trigger: 'blur' }],
-  type: [{ required: true, message: '请选择类型', trigger: 'change' }]
+  type: [{ required: true, message: '请选择类型', trigger: 'change' }],
+  appCode: [{ required: true, message: '缺少应用上下文', trigger: 'change' }]
 }
 
 const dialogTitle = computed(() => form.id ? '编辑菜单' : '新建菜单')
 
+const fetchApps = async () => {
+    try {
+        const res = await request.get('/applications')
+        appList.value = res || []
+        if(appList.value.length > 0 && !currentAppCode.value) {
+            currentAppCode.value = appList.value[0].code
+            fetchData()
+        }
+    } catch(e) { console.error(e) }
+}
+
 const fetchData = async () => {
+  if(!currentAppCode.value) return
   loading.value = true
   try {
-    const res = await request.get('/permissions')
+    const res = await request.get(`/permissions?appCode=${currentAppCode.value}`) // Ensure backend supports filtering by appCode if passed
+    // NOTE: Backend SysPermissionController.list() needs update to support filtering.
+    // For now assuming we might receive all and filter frontend or update backend soon.
+    // Let's rely on backend filtering.
     console.log('Permissions:', res)
     tableData.value = res || []
   } catch (e) {
@@ -121,14 +161,14 @@ const fetchData = async () => {
 
 const handleAdd = (parentId) => {
   resetForm()
-  form.parentId = parentId // Set parent if adding sub-item
+  form.parentId = parentId 
+  form.appCode = currentAppCode.value
   dialogVisible.value = true
 }
 
 const handleEdit = (row) => {
   resetForm()
   Object.assign(form, row)
-  // Fix: parentId might be 0, tree-select might need null or logic adjustment.
   if (form.parentId === 0) form.parentId = undefined
   dialogVisible.value = true
 }
@@ -176,7 +216,7 @@ const resetForm = () => {
 }
 
 onMounted(() => {
-  fetchData()
+  fetchApps()
 })
 </script>
 

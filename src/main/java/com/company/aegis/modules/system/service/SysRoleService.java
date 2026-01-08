@@ -7,4 +7,6 @@ public interface SysRoleService extends IService<SysRole> {
     void assignPermissions(Long roleId, java.util.List<Long> permissionIds);
 
     java.util.List<Long> getPermissionIdsByRoleId(Long roleId);
+
+    java.util.List<SysRole> list(String appCode);
 }

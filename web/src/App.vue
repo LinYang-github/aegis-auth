@@ -69,6 +69,7 @@ import Login from './views/Login.vue'
 import UserManagement from './views/system/user/index.vue'
 import RoleManagement from './views/system/role/index.vue'
 import MenuManagement from './views/system/menu/index.vue'
+import ApplicationManagement from './views/system/application/index.vue'
 import { getToken, removeToken } from './utils/auth'
 import { User, SwitchButton, Moon, Sunny, Monitor, Key, Menu as MenuIcon } from '@element-plus/icons-vue'
 
@@ -81,7 +82,8 @@ const menuList = ref([])
 const componentMap = {
     'UserManagement': UserManagement,
     'RoleManagement': RoleManagement,
-    'MenuManagement': MenuManagement
+    'MenuManagement': MenuManagement,
+    'ApplicationManagement': ApplicationManagement
 }
 
 // Map backend permission code/path to component key if needed, or just use code as key
@@ -108,7 +110,9 @@ const mapMenuName = (key) => {
     const map = {
         'UserManagement': '用户管理',
         'RoleManagement': '角色管理',
-        'MenuManagement': '菜单管理'
+        'MenuManagement': '菜单管理',
+        'ApplicationManagement': '应用管理',
+        'ApplicationManagement': '应用管理'
     }
     return map[key] || key
 }
@@ -119,6 +123,7 @@ const currentPageComponent = computed(() => {
     if(activeMenu.value === 'sys:user:list' || activeMenu.value === 'UserManagement') return UserManagement
     if(activeMenu.value === 'sys:role:list' || activeMenu.value === 'RoleManagement') return RoleManagement
     if(activeMenu.value === 'sys:menu:list' || activeMenu.value === 'MenuManagement') return MenuManagement
+    if(activeMenu.value === 'sys:app:list' || activeMenu.value === 'ApplicationManagement') return ApplicationManagement
     return UserManagement
 })
 
