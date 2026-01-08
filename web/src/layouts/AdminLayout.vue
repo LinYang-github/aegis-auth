@@ -2,17 +2,18 @@
   <div class="admin-layout">
     <aside class="sidebar">
       <div class="brand">
-        Aegis Auth
+        <img src="/aegis-shield.svg" alt="Logo" class="brand-logo" />
+        <span>Aegis Auth</span>
       </div>
       <nav class="nav-links">
         <router-link to="/" class="nav-item" active-class="active">
-          <span>👥</span> User Management
+          <el-icon class="nav-icon"><UserFilled /></el-icon> User Management
         </router-link>
         <!-- Add more links here later -->
       </nav>
       <div class="logout-section">
         <button @click="handleLogout" class="logout-btn">
-           Sign Out
+           <el-icon class="btn-icon"><SwitchButton /></el-icon> Sign Out
         </button>
       </div>
     </aside>
@@ -21,8 +22,15 @@
       <header class="top-bar">
         <div class="breadcrumb">System / User Management</div>
         <div class="user-profile">
-          <span>Administrator</span>
-          <div class="avatar">A</div>
+          <div class="profile-item">
+            <el-icon><User /></el-icon>
+            <span>Personal Center</span>
+          </div>
+          <div class="divider">|</div>
+          <div class="profile-info">
+             <span>Administrator</span>
+             <div class="avatar">A</div>
+          </div>
         </div>
       </header>
       
@@ -35,6 +43,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { User, SwitchButton, UserFilled } from '@element-plus/icons-vue';
 
 const router = useRouter();
 
@@ -69,6 +78,12 @@ const handleLogout = () => {
   font-size: 1.25rem;
   font-weight: bold;
   border-bottom: 1px solid rgba(255,255,255,0.1);
+  gap: 0.75rem;
+}
+
+.brand-logo {
+  width: 28px;
+  height: 28px;
 }
 
 .nav-links {
@@ -85,14 +100,15 @@ const handleLogout = () => {
   transition: all 0.3s;
 }
 
+.nav-icon {
+  margin-right: 0.75rem;
+  font-size: 1.1em;
+}
+
 .nav-item:hover, .nav-item.active {
   background-color: rgba(255,255,255,0.1);
   color: #fff;
   border-right: 3px solid #00C9FF;
-}
-
-.nav-item span {
-  margin-right: 0.75rem;
 }
 
 .logout-section {
@@ -109,6 +125,10 @@ const handleLogout = () => {
   border-radius: 4px;
   cursor: pointer;
   transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .logout-btn:hover {
@@ -141,6 +161,30 @@ const handleLogout = () => {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.profile-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: #718096;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.profile-item:hover {
+  color: #00C9FF;
+}
+
+.divider {
+  color: #e2e8f0;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .avatar {
