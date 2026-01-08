@@ -17,6 +17,7 @@ import java.util.List;
 public class SysUserController {
 
     private final SysUserService sysUserService;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @GetMapping
     public Result<List<SysUser>> list() {
@@ -30,17 +31,28 @@ public class SysUserController {
 
     @PostMapping
     public Result<Boolean> create(@RequestBody SysUser user) {
-        // TODO: Password encryption and validation
+        if (user.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         return Result.success(sysUserService.save(user));
     }
 
     @PutMapping
     public Result<Boolean> update(@RequestBody SysUser user) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        } else {
+            user.setPassword(null); // Do not update password if empty
+        }
         return Result.success(sysUserService.updateById(user));
     }
 
     @DeleteMapping("/{id}")
     public Result<Boolean> delete(@PathVariable Long id) {
+        SysUser user = sysUserService.getById(id);
+        if (user != null && "admin".equals(user.getUsername())) {
+            return Result.fail(500, "超级管理员不可删除");
+        }
         return Result.success(sysUserService.removeById(id));
     }
 }
