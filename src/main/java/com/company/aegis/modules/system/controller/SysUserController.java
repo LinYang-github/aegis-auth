@@ -12,7 +12,7 @@ import java.util.List;
  * User Management API
  */
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class SysUserController {
 

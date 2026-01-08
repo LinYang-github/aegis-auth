@@ -20,12 +20,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/assets/**", "/webjars/**", "/login").permitAll()
+                        .requestMatchers("/assets/**", "/webjars/**", "/login", "/api/**").permitAll()
                         .anyRequest().authenticated())
-                // Form login handles the redirect to the login page from the
-                // authorization server filter chain
-                .formLogin(Customizer.withDefaults());
+                .formLogin(form -> form
+                        .loginProcessingUrl("/api/login")
+                        .successHandler((request, response, authentication) -> {
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write(
+                                    "{\"code\": 0, \"data\": {\"token\": \"session\"}, \"message\": \"Login Success\"}");
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"code\": 401, \"message\": \"Bad credentials\"}");
+                        })
+                        .permitAll());
 
         return http.build();
     }

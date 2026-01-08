@@ -1,0 +1,23 @@
+/* 默认：浅色模式 */
+:root {
+  --gdos-primary-color: #409EFF;
+  --gdos-bg-page: #f5f7fa;       /* 页面背景灰 */
+  --gdos-bg-card: #ffffff;       /* 卡片背景白 */
+  --gdos-text-primary: #303133;
+  --gdos-border-color: #dcdfe6;
+  --gdos-header-bg: #ffffff;
+  
+  /* 覆盖 Element Plus 变量以统一风格 */
+  --el-color-primary: var(--gdos-primary-color);
+  --el-bg-color-page: var(--gdos-bg-page);
+}
+
+/* 深色模式覆盖 */
+html.dark {
+  --gdos-primary-color: #409EFF;
+  --gdos-bg-page: #0d0d0d;       /* 极深灰背景 */
+  --gdos-bg-card: #1d1e1f;       /* 深灰卡片 */
+  --gdos-text-primary: #E5EAF3;
+  --gdos-border-color: #333333;
+  --gdos-header-bg: #141414;
+}
