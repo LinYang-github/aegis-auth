@@ -69,6 +69,15 @@
                 "cwd": "${workspaceFolder}/examples/vue-pkce"
             },
             "group": "test",
+        },
+        {
+            "label": "Run Go Demo",
+            "type": "shell",
+            "command": "go run .",
+            "options": {
+                "cwd": "${workspaceFolder}/examples/go-oidc-client"
+            },
+            "group": "test",
             "presentation": {
                 "reveal": "always",
                 "panel": "shared"

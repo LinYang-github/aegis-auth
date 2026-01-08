@@ -36,6 +36,7 @@ public class DataSeeder implements CommandLineRunner {
         initDefaultApp();
         initDemoClient();
         initVueDemoClient();
+        initGoDemoClient();
         initMenus();
     }
 
@@ -123,6 +124,56 @@ public class DataSeeder implements CommandLineRunner {
 
             registeredClientRepository.save(registeredClient);
             log.info("Demo Client 'demo-vue-client' initialized successfully.");
+        }
+    }
+
+    private void initGoDemoClient() {
+        String appCode = "demo-go-client";
+
+        // 1. Ensure SysApplication exists
+        long count = sysApplicationService.count(new LambdaQueryWrapper<SysApplication>()
+                .eq(SysApplication::getCode, appCode));
+        if (count == 0) {
+            SysApplication app = new SysApplication();
+            app.setName("Go OIDC Demo");
+            app.setCode(appCode);
+            app.setStatus(1);
+            sysApplicationService.save(app);
+        }
+
+        // 2. Always ensure RegisteredClient exists and has correct secret
+        RegisteredClient existingClient = registeredClientRepository.findByClientId(appCode);
+        if (existingClient != null) {
+            // Update existing (reset secret)
+            RegisteredClient updatedClient = RegisteredClient.from(existingClient)
+                    .clientSecret(passwordEncoder.encode("demo-go-secret"))
+                    .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                    .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                    .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                    .redirectUri("http://localhost:8081/callback")
+                    .scope(OidcScopes.OPENID)
+                    .scope(OidcScopes.PROFILE)
+                    .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+                    .build();
+            registeredClientRepository.save(updatedClient);
+            log.info("Demo Client '{}' updated successfully.", appCode);
+        } else {
+            // Create new
+            RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+                    .clientId(appCode)
+                    .clientSecret(passwordEncoder.encode("demo-go-secret"))
+                    .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                    .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                    .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                    .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS) // For Debugging
+                    .redirectUri("http://localhost:8081/callback")
+                    .scope(OidcScopes.OPENID)
+                    .scope(OidcScopes.PROFILE)
+                    .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+                    .build();
+
+            registeredClientRepository.save(registeredClient);
+            log.info("Demo Client '{}' initialized successfully.", appCode);
         }
     }
 

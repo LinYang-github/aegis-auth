@@ -22,10 +22,9 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
-import org.springframework.http.MediaType;
-import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.http.HttpStatus;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -39,6 +38,12 @@ public class AuthorizationServerConfig {
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+        // Explicitly force 401 for Token Endpoint (prevent redirect to login)
+        http.exceptionHandling(exceptions -> exceptions
+                .defaultAuthenticationEntryPointFor(
+                        new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+                        new AntPathRequestMatcher("/oauth2/token")));
+
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .oidc(Customizer.withDefaults()); // Enable OpenID Connect 1.0
@@ -47,13 +52,6 @@ public class AuthorizationServerConfig {
         http.csrf(csrf -> csrf.disable()); // Disable CSRF for Auth Server endpoints
 
         http
-                // Redirect to the login page when not authenticated from the
-                // authorization endpoint (GET requests only)
-                .exceptionHandling((exceptions) -> exceptions
-                        .defaultAuthenticationEntryPointFor(
-                                new LoginUrlAuthenticationEntryPoint("/login"),
-                                request -> "GET".equals(request.getMethod()) &&
-                                        new MediaTypeRequestMatcher(MediaType.TEXT_HTML).matches(request)))
                 // Accept access tokens for User Info and/or Client Registration
                 .oauth2ResourceServer((resourceServer) -> resourceServer
                         .jwt(Customizer.withDefaults()));

@@ -19,7 +19,13 @@ public class DebugController {
         if (client == null) {
             return "Client not found: " + clientId;
         }
+        String grants = client.getAuthorizationGrantTypes().stream()
+                .map(g -> g.getValue())
+                .reduce((a, b) -> a + "," + b)
+                .orElse("");
         return "Client found: " + client.getId() + ", Method: " + client.getClientAuthenticationMethods() +
-                ", Redirects: " + client.getRedirectUris() + ", Settings: " + client.getClientSettings().getSettings();
+                ", Grants: [" + grants + "]" +
+                ", Redirects: " + client.getRedirectUris() + ", Settings: " + client.getClientSettings().getSettings() +
+                ", Secret: " + client.getClientSecret();
     }
 }
