@@ -7,4 +7,6 @@ public interface SysUserService extends IService<SysUser> {
     void assignRoles(Long userId, java.util.List<Long> roleIds);
 
     java.util.List<Long> getRoleIdsByUserId(Long userId);
+
+    SysUser getByUsername(String username);
 }

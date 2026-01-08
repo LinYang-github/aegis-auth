@@ -31,10 +31,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public java.util.List<Long> getRoleIdsByUserId(Long userId) {
-        java.util.List<com.company.aegis.modules.system.entity.SysUserRole> list = sysUserRoleMapper.selectList(
-                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<com.company.aegis.modules.system.entity.SysUserRole>()
-                        .eq(com.company.aegis.modules.system.entity.SysUserRole::getUserId, userId));
-        return list.stream().map(com.company.aegis.modules.system.entity.SysUserRole::getRoleId)
-                .collect(java.util.stream.Collectors.toList());
+        return baseMapper.selectRoleIdsByUserId(userId);
+    }
+
+    @Override
+    public com.company.aegis.modules.system.entity.SysUser getByUsername(String username) {
+        return getOne(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<com.company.aegis.modules.system.entity.SysUser>()
+                        .eq(com.company.aegis.modules.system.entity.SysUser::getUsername, username));
     }
 }
