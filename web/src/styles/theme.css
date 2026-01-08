@@ -1,23 +1,86 @@
-/* 默认：浅色模式 */
+/* Global Design System Variables */
+
+/* Light Mode (Default) */
 :root {
-  --gdos-primary-color: #409EFF;
-  --gdos-bg-page: #f5f7fa;       /* 页面背景灰 */
-  --gdos-bg-card: #ffffff;       /* 卡片背景白 */
-  --gdos-text-primary: #303133;
-  --gdos-border-color: #dcdfe6;
-  --gdos-header-bg: #ffffff;
-  
-  /* 覆盖 Element Plus 变量以统一风格 */
-  --el-color-primary: var(--gdos-primary-color);
-  --el-bg-color-page: var(--gdos-bg-page);
+  /* Brand Colors */
+  --app-primary-color: #409EFF;
+
+  /* Backgrounds */
+  --app-bg-body: #f0f2f5;
+  /* Improved light gray for app background */
+  --app-bg-sidebar: #ffffff;
+  /* White sidebar */
+  --app-bg-header: #ffffff;
+  --app-bg-card: #ffffff;
+
+  /* Text Colors */
+  --app-text-primary: #303133;
+  --app-text-regular: #606266;
+  --app-text-secondary: #909399;
+
+  /* Sidebar Text */
+  --app-text-sidebar: #303133;
+  /* Dark text for white sidebar */
+  --app-text-sidebar-active: #409EFF;
+  --app-sidebar-hover-bg: #ecf5ff;
+  /* Light blue hover */
+  --app-sidebar-hover-text: #409EFF;
+
+  /* Borders & Dividers */
+  --app-border-color: #e4e7ed;
+  --app-border-color-light: #ebeef5;
+
+  /* Sidebar Specifics */
+  --app-sidebar-width: 220px;
+  --app-sidebar-logo-border: #e4e7ed;
 }
 
-/* 深色模式覆盖 */
+/* Dark Mode Overrides */
 html.dark {
-  --gdos-primary-color: #409EFF;
-  --gdos-bg-page: #0d0d0d;       /* 极深灰背景 */
-  --gdos-bg-card: #1d1e1f;       /* 深灰卡片 */
-  --gdos-text-primary: #E5EAF3;
-  --gdos-border-color: #333333;
-  --gdos-header-bg: #141414;
+  /* Backgrounds */
+  --app-bg-body: #141414;
+  /* Deep Carbon */
+  --app-bg-sidebar: #1f1f1f;
+  /* Slightly lighter than body for sidebar in dark mode to distinguish */
+  --app-bg-header: #1f1f1f;
+  --app-bg-card: #1f1f1f;
+
+  /* Text Colors */
+  --app-text-primary: #E5EAF3;
+  --app-text-regular: #CFD3DC;
+  --app-text-secondary: #A3A6AD;
+
+  /* Sidebar Text */
+  --app-text-sidebar: #E5EAF3;
+  --app-text-sidebar-active: #409EFF;
+  --app-sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+  --app-sidebar-hover-text: #ffffff;
+
+  /* Borders */
+  --app-border-color: #4C4D49;
+  --app-border-color-light: #363637;
+
+  /* Sidebar Specifics */
+  --app-sidebar-logo-border: #363637;
+}
+
+/* Element Plus Variable Overrides to Sync with System */
+html {
+  --el-bg-color-page: var(--app-bg-body);
+  --el-bg-color-overlay: var(--app-bg-card);
+}
+
+html.dark {
+  /* Ensure Element uses our dark backgrounds */
+  --el-bg-color: var(--app-bg-card);
+  --el-bg-color-overlay: var(--app-bg-card);
+  --el-border-color-light: var(--app-border-color-light);
+  --el-text-color-primary: var(--app-text-primary);
+}
+
+/* Global Utility Classes */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

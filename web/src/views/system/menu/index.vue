@@ -36,11 +36,11 @@
         </el-table-column>
         <el-table-column prop="path" label="路径/URL" />
         <el-table-column prop="sortOrder" label="排序" width="80" />
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" width="240">
           <template #default="{ row }">
-            <el-button link type="primary" size="small" @click="handleAdd(row.id)">新增子项</el-button>
-            <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button link type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+            <el-button link type="primary" size="small" icon="Plus" @click="handleAdd(row.id)">新增子项</el-button>
+            <el-button link type="primary" size="small" icon="Edit" @click="handleEdit(row)">编辑</el-button>
+            <el-button link type="danger" size="small" icon="Delete" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -101,6 +101,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import request from '../../../utils/request'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Plus, Refresh, Edit, Delete } from '@element-plus/icons-vue'
 
 const loading = ref(false)
 const submitting = ref(false)

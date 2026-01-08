@@ -11,23 +11,21 @@
       <el-menu
         class="el-menu-vertical"
         :default-active="activeMenu"
-        background-color="transparent"
-        text-color="#bfcbd9"
-        active-text-color="#409EFF"
         @select="handleSelect"
       >
         <template v-for="menu in menuList" :key="menu.id">
             <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="menu.code">
                 <template #title>
-                    <el-icon><MenuIcon /></el-icon>
+                    <el-icon><component :is="getMenuIcon(menu)" /></el-icon>
                     <span>{{ menu.name }}</span>
                 </template>
                 <el-menu-item v-for="child in menu.children" :key="child.id" :index="child.code">
-                    {{ child.name }}
+                    <el-icon><component :is="getMenuIcon(child)" /></el-icon>
+                    <span>{{ child.name }}</span>
                 </el-menu-item>
             </el-sub-menu>
             <el-menu-item v-else :index="menu.code">
-                <el-icon><MenuIcon /></el-icon>
+                <el-icon><component :is="getMenuIcon(menu)" /></el-icon>
                 <span>{{ menu.name }}</span>
             </el-menu-item>
         </template>
@@ -71,7 +69,7 @@ import RoleManagement from './views/system/role/index.vue'
 import MenuManagement from './views/system/menu/index.vue'
 import ApplicationManagement from './views/system/application/index.vue'
 import { getToken, removeToken } from './utils/auth'
-import { User, SwitchButton, Moon, Sunny, Monitor, Key, Menu as MenuIcon } from '@element-plus/icons-vue'
+import { User, SwitchButton, Moon, Sunny, Monitor, Key, Menu as MenuIcon, Setting, Avatar, Platform, Tools } from '@element-plus/icons-vue'
 
 // State
 const isLoggedIn = ref(!!getToken())
@@ -92,8 +90,32 @@ const componentMap = {
 // Let's assume backend `code` or `path` maps to our component keys.
 // For now, I'll map common codes manually or use the `code` field from backend as the index.
 
+const getMenuIcon = (item) => {
+    // 1. Try Code
+    const codeMap = {
+        'sys': Tools,
+        'sys:user:list': User,
+        'sys:role:list': Avatar,
+        'sys:menu:list': MenuIcon,
+        'sys:app:list': Platform
+    }
+    if (item.code && codeMap[item.code]) return codeMap[item.code]
+
+    // 2. Try Path
+    const pathMap = {
+        '/system/user': User,
+        '/system/role': Avatar,
+        '/system/menu': MenuIcon,
+        '/system/application': Platform
+    }
+    if (item.path && pathMap[item.path]) return pathMap[item.path]
+
+    // 3. Fallback
+    return MenuIcon
+}
+
 const mapMenuName = (key) => {
-    // Try to find name in menuList
+    // ... same as before
     const findName = (menus) => {
         for(const m of menus) {
             if(m.code === key) return m.name
@@ -111,7 +133,6 @@ const mapMenuName = (key) => {
         'UserManagement': '用户管理',
         'RoleManagement': '角色管理',
         'MenuManagement': '菜单管理',
-        'ApplicationManagement': '应用管理',
         'ApplicationManagement': '应用管理'
     }
     return map[key] || key
@@ -181,14 +202,17 @@ onMounted(() => {
 .app-container, .app-layout {
   height: 100vh;
   width: 100vw;
-  background-color: var(--gdos-bg-page);
+  background-color: var(--app-bg-body);
 }
 
 .sidebar {
-  background-color: #1d1e1f; /* Dark sidebar */
-  border-right: 1px solid var(--gdos-border-color);
+  background-color: var(--app-sidebar-bg);
+  border-right: none; /* Removed border as sidebar is usually dark/distinct */
   display: flex;
   flex-direction: column;
+  box-shadow: 2px 0 6px rgba(0,21,41,.35);
+  z-index: 10;
+  transition: all 0.3s;
 }
 .brand {
   height: 60px;
@@ -196,13 +220,11 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border-bottom: 1px solid #333;
-  color: #fff;
+  background-color: var(--app-sidebar-bg); /* Ensure brand matches sidebar */
+  border-bottom: 1px solid var(--app-sidebar-logo-border);
+  color: var(--app-text-sidebar-active); /* Use active color (primary) for brand to pop on white, or just primary text */
   font-weight: 600;
   font-size: 18px;
-}
-.sidebar-footer {
-    display: none;
 }
 .header-right {
     display: flex;
@@ -211,37 +233,64 @@ onMounted(() => {
 }
 .theme-switch {
     cursor: pointer;
-    color: var(--gdos-text-primary);
+    color: var(--app-text-primary);
     display: flex;
     align-items: center;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+.theme-switch:hover {
+    background-color: var(--app-border-color-light);
 }
 
 .header {
-  background-color: var(--gdos-header-bg);
-  border-bottom: 1px solid var(--gdos-border-color);
+  height: 60px;
+  background-color: var(--app-bg-header);
+  border-bottom: 1px solid var(--app-border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
+  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  z-index: 9;
 }
 .user-info {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: var(--gdos-text-primary);
+    color: var(--app-text-primary);
+    cursor: pointer;
 }
 .breadcrumb {
-    color: var(--el-text-color-secondary);
+    color: var(--app-text-regular);
+    font-size: 14px;
 }
 
 .main-content {
   padding: 20px;
-  background-color: var(--el-bg-color-page);
-  overflow: hidden; /* Prevent double scroll */
+  background-color: var(--app-bg-body);
+  overflow-y: auto;
 }
 
 /* Sidebar Menu Overrides */
 :deep(.el-menu) {
     border-right: none;
+    background-color: transparent !important;
+}
+:deep(.el-menu-item), :deep(.el-sub-menu__title) {
+    color: var(--app-text-sidebar);
+}
+
+/* Active State */
+:deep(.el-menu-item.is-active) {
+    color: var(--app-text-sidebar-active);
+    background-color: var(--app-sidebar-hover-bg); /* Use usage of light background for active state in light mode */
+    border-right: 3px solid var(--app-text-sidebar-active); /* Optional: add a border indicator */
+}
+/* Hover State */
+:deep(.el-menu-item:hover), :deep(.el-sub-menu__title:hover) {
+    color: var(--app-sidebar-hover-text);
+    background-color: var(--app-sidebar-hover-bg);
 }
 </style>

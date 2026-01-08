@@ -28,9 +28,9 @@
         </el-table-column>
         <el-table-column label="操作" width="250" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" size="small" @click="handleAssignPermission(row)">分配权限</el-button>
-            <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button link type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+            <el-button link type="primary" size="small" icon="Setting" @click="handleAssignPermission(row)">分配权限</el-button>
+            <el-button link type="primary" size="small" icon="Edit" @click="handleEdit(row)">编辑</el-button>
+            <el-button link type="danger" size="small" icon="Delete" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -87,6 +87,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import request from '../../../utils/request'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Plus, Refresh, Setting, Edit, Delete } from '@element-plus/icons-vue'
 
 const loading = ref(false)
 const tableData = ref([])
