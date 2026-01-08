@@ -1,0 +1,57 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Backend (Dev)",
+            "type": "shell",
+            "command": "mvn spring-boot:run",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": "$java"
+        },
+        {
+            "label": "Run Frontend (Dev)",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": {
+                "cwd": "${workspaceFolder}/web"
+            },
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": {
+                "owner": "custom",
+                "pattern": {
+                    "regexp": "^$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*Vite.*",
+                    "endsPattern": ".*Local:.*"
+                }
+            }
+        },
+        {
+            "label": "Build All (Backend + Frontend)",
+            "type": "shell",
+            "command": "mvn clean package -DskipTests",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Run Prod (JAR)",
+            "type": "shell",
+            "command": "java -jar target/aegis-auth-1.0.0.jar",
+            "dependsOn": "Build All (Backend + Frontend)",
+            "problemMatcher": []
+        }
+    ]
+}
