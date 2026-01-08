@@ -27,8 +27,9 @@
                 {{ formatTime(row.createdAt) }}
             </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="280" fixed="right">
           <template #default="{ row }">
+            <el-button link type="primary" size="small" @click="handleAssignRole(row)">分配角色</el-button>
             <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
             <el-button v-if="row.username !== 'admin'" link type="danger" size="small" @click="handleDelete(row)">删除</el-button>
           </template>
@@ -70,6 +71,17 @@
         <el-button type="primary" @click="handleSubmit" :loading="submitting">确认</el-button>
       </template>
     </el-dialog>
+
+    <!-- Role Assign Dialog -->
+    <el-dialog v-model="roleDialogVisible" title="分配角色" width="500px">
+        <el-checkbox-group v-model="selectedRoleIds">
+            <el-checkbox v-for="role in roleList" :key="role.id" :label="role.id">{{ role.name }}</el-checkbox>
+        </el-checkbox-group>
+        <template #footer>
+            <el-button @click="roleDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="handleSubmitRole" :loading="submittingRole">确认</el-button>
+        </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -84,6 +96,13 @@ const submitting = ref(false)
 const tableData = ref([])
 const dialogVisible = ref(false)
 const formRef = ref(null)
+
+// Role Assign State
+const roleDialogVisible = ref(false)
+const roleList = ref([])
+const selectedRoleIds = ref([])
+const currentUserId = ref(null)
+const submittingRole = ref(false)
 
 const form = reactive({
   id: undefined,
@@ -163,6 +182,30 @@ const handleSubmit = async () => {
       }
     }
   })
+}
+
+const handleAssignRole = async (row) => {
+    currentUserId.value = row.id
+    roleDialogVisible.value = true
+    submittingRole.value = true
+    try {
+        // 1. Fetch all roles
+        const roles = await request.get('/roles')
+        roleList.value = roles || []
+        
+        // 2. Fetch user roles
+        const userRoles = await request.get(`/users/${row.id}/roles`)
+        selectedRoleIds.value = userRoles || []
+    } catch(e){} finally { submittingRole.value = false}
+}
+
+const handleSubmitRole = async () => {
+    submittingRole.value = true
+    try {
+        await request.post(`/users/${currentUserId.value}/roles`, selectedRoleIds.value)
+        ElMessage.success('分配成功')
+        roleDialogVisible.value = false
+    } catch(e){} finally { submittingRole.value = false }
 }
 
 const resetForm = () => {

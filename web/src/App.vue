@@ -16,11 +16,21 @@
         active-text-color="#409EFF"
         @select="handleSelect"
       >
-        <el-menu-item index="UserManagement">
-          <el-icon><User /></el-icon>
-          <span>用户管理</span>
-        </el-menu-item>
-        <!-- Add more menu items here -->
+        <template v-for="menu in menuList" :key="menu.id">
+            <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="menu.code">
+                <template #title>
+                    <el-icon><MenuIcon /></el-icon>
+                    <span>{{ menu.name }}</span>
+                </template>
+                <el-menu-item v-for="child in menu.children" :key="child.id" :index="child.code">
+                    {{ child.name }}
+                </el-menu-item>
+            </el-sub-menu>
+            <el-menu-item v-else :index="menu.code">
+                <el-icon><MenuIcon /></el-icon>
+                <span>{{ menu.name }}</span>
+            </el-menu-item>
+        </template>
       </el-menu>
       
 
@@ -29,7 +39,7 @@
     <el-container>
       <el-header class="header">
         <div class="breadcrumb">
-            系统管理 / {{ activeMenu === 'UserManagement' ? '用户管理' : activeMenu }}
+            系统管理 / {{ mapMenuName(activeMenu) }}
         </div>
         <div class="header-right">
              <div class="theme-switch" @click="toggleDark()">
@@ -54,27 +64,65 @@
 <script setup>
 import { ref, computed, shallowRef, onMounted } from 'vue'
 import { useDark, useToggle } from '@vueuse/core'
+import request from './utils/request'
 import Login from './views/Login.vue'
 import UserManagement from './views/system/user/index.vue'
+import RoleManagement from './views/system/role/index.vue'
+import MenuManagement from './views/system/menu/index.vue'
 import { getToken, removeToken } from './utils/auth'
-import { User, SwitchButton, Moon, Sunny, Monitor } from '@element-plus/icons-vue'
+import { User, SwitchButton, Moon, Sunny, Monitor, Key, Menu as MenuIcon } from '@element-plus/icons-vue'
 
 // State
 const isLoggedIn = ref(!!getToken())
 const activeMenu = ref('UserManagement')
+const menuList = ref([])
 
 // Component Map
 const componentMap = {
-    'UserManagement': UserManagement
+    'UserManagement': UserManagement,
+    'RoleManagement': RoleManagement,
+    'MenuManagement': MenuManagement
+}
+
+// Map backend permission code/path to component key if needed, or just use code as key
+// Simple mapping: code "user:list" -> key "UserManagement"
+// Or just let activeMenu be the index from backend?
+// Let's assume backend `code` or `path` maps to our component keys.
+// For now, I'll map common codes manually or use the `code` field from backend as the index.
+
+const mapMenuName = (key) => {
+    // Try to find name in menuList
+    const findName = (menus) => {
+        for(const m of menus) {
+            if(m.code === key) return m.name
+            if(m.children) {
+                const found = findName(m.children)
+                if(found) return found
+            }
+        }
+        return null
+    }
+    const name = findName(menuList.value)
+    if(name) return name
+
+    const map = {
+        'UserManagement': '用户管理',
+        'RoleManagement': '角色管理',
+        'MenuManagement': '菜单管理'
+    }
+    return map[key] || key
 }
 
 const currentPageComponent = computed(() => {
-    return componentMap[activeMenu.value] || UserManagement
+    // Map activeMenu (which is role code or similar) to Component
+    // Since we don't have dynamic component loading yet, we map known codes.
+    if(activeMenu.value === 'sys:user:list' || activeMenu.value === 'UserManagement') return UserManagement
+    if(activeMenu.value === 'sys:role:list' || activeMenu.value === 'RoleManagement') return RoleManagement
+    if(activeMenu.value === 'sys:menu:list' || activeMenu.value === 'MenuManagement') return MenuManagement
+    return UserManagement
 })
 
 // Theme
-// Using standard manual toggle for simplicity as per guide or useDark
-// Guide says: document.documentElement.classList.add('dark')
 const isDark = ref(false)
 const toggleDark = () => {
     isDark.value = !isDark.value
@@ -88,19 +136,34 @@ const toggleDark = () => {
 // Actions
 const handleLoginSuccess = () => {
     isLoggedIn.value = true
-    activeMenu.value = 'UserManagement'
+    fetchMenus()
 }
 
 const handleLogout = () => {
     removeToken()
     isLoggedIn.value = false
+    menuList.value = []
 }
 
 const handleSelect = (key) => {
     activeMenu.value = key
 }
 
+const fetchMenus = async () => {
+    if(!isLoggedIn.value) return
+    try {
+        const res = await request.get('/user/menus')
+        menuList.value = res || []
+        // Default select first menu if activeMenu is not valid?
+    } catch(e) {
+        console.error(e)
+    }
+}
+
 onMounted(() => {
+    if(isLoggedIn.value) {
+        fetchMenus()
+    }
     // Check system preference
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
        // isDark.value = true

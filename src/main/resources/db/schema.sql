@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS oauth2_authorization_consent (
 
 /* User Table */
 CREATE TABLE IF NOT EXISTS sys_user (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, -- SQLite auto increment
+    id INTEGER PRIMARY KEY, -- Snowflake ID
     username VARCHAR(50) NOT NULL,
     password VARCHAR(100) NOT NULL, -- BCrypt Encoded
     nickname VARCHAR(50),
@@ -86,10 +86,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_sys_user_username ON sys_user(username);
 
 /* Role Table */
 CREATE TABLE IF NOT EXISTS sys_role (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     code VARCHAR(50) NOT NULL,
     name VARCHAR(50) NOT NULL,
     description VARCHAR(200),
+    deleted INTEGER DEFAULT 0, -- 0: Not Deleted, 1: Deleted
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -98,7 +99,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_sys_role_code ON sys_role(code);
 
 /* Permission Table */
 CREATE TABLE IF NOT EXISTS sys_permission (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     parent_id INTEGER DEFAULT 0,
     name VARCHAR(50) NOT NULL,
     code VARCHAR(100) NOT NULL, -- e.g., "user:read"
@@ -106,6 +107,7 @@ CREATE TABLE IF NOT EXISTS sys_permission (
     path VARCHAR(200), -- Menu path or API URL
     method VARCHAR(10), -- HTTP Method for API
     sort_order INTEGER DEFAULT 0,
+    deleted INTEGER DEFAULT 0, -- 0: Not Deleted, 1: Deleted
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

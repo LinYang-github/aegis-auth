@@ -55,4 +55,15 @@ public class SysUserController {
         }
         return Result.success(sysUserService.removeById(id));
     }
+
+    @PostMapping("/{id}/roles")
+    public Result<Boolean> assignRoles(@PathVariable Long id, @RequestBody List<Long> roleIds) {
+        sysUserService.assignRoles(id, roleIds);
+        return Result.success(true);
+    }
+
+    @GetMapping("/{id}/roles")
+    public Result<List<Long>> getRoles(@PathVariable Long id) {
+        return Result.success(sysUserService.getRoleIdsByUserId(id));
+    }
 }
