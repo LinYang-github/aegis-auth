@@ -28,16 +28,33 @@ public class DataSeeder implements CommandLineRunner {
     private final SysPermissionService sysPermissionService;
     private final SysApplicationService sysApplicationService;
     private final PasswordEncoder passwordEncoder;
+    private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
     private final RegisteredClientRepository registeredClientRepository;
 
     @Override
     public void run(String... args) throws Exception {
+        initSchema();
         initAdminUser();
         initDefaultApp();
         initDemoClient();
         initVueDemoClient();
         initGoDemoClient();
         initMenus();
+    }
+
+    private void initSchema() {
+        // 1. SysLog (Create if not exists)
+        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS sys_log (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "username TEXT," +
+                "operation TEXT," +
+                "method TEXT," +
+                "params TEXT," +
+                "time INTEGER," +
+                "ip TEXT," +
+                "create_time TEXT" +
+                ")");
+        log.info("Schema initialized (sys_log checked).");
     }
 
     private void initAdminUser() {

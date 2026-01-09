@@ -1,5 +1,8 @@
 package com.company.aegis.modules.system.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.company.aegis.common.annotation.AutoLog;
 import com.company.aegis.common.result.Result;
 import com.company.aegis.modules.system.entity.SysUser;
 import com.company.aegis.modules.system.service.SysUserService;
@@ -20,34 +23,40 @@ public class SysUserController {
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @GetMapping
-    public Result<List<SysUser>> list() {
-        return Result.success(sysUserService.list());
+    @AutoLog("List Users")
+    public Result<IPage<SysUser>> list(@RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+        return Result.success(sysUserService.page(new Page<>(page, size)));
     }
 
     @GetMapping("/{id}")
+    @AutoLog("Get User")
     public Result<SysUser> getById(@PathVariable Long id) {
         return Result.success(sysUserService.getById(id));
     }
 
     @PostMapping
-    public Result<Boolean> create(@RequestBody SysUser user) {
-        if (user.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+    @AutoLog("Create User")
+    public Result<Boolean> create(@RequestBody SysUser sysUser) {
+        if (sysUser.getPassword() != null) {
+            sysUser.setPassword(passwordEncoder.encode(sysUser.getPassword()));
         }
-        return Result.success(sysUserService.save(user));
+        return Result.success(sysUserService.save(sysUser));
     }
 
     @PutMapping
-    public Result<Boolean> update(@RequestBody SysUser user) {
-        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+    @AutoLog("Update User")
+    public Result<Boolean> update(@RequestBody SysUser sysUser) {
+        if (sysUser.getPassword() != null && !sysUser.getPassword().isEmpty()) {
+            sysUser.setPassword(passwordEncoder.encode(sysUser.getPassword()));
         } else {
-            user.setPassword(null); // Do not update password if empty
+            sysUser.setPassword(null); // Do not update password if empty
         }
-        return Result.success(sysUserService.updateById(user));
+        return Result.success(sysUserService.updateById(sysUser));
     }
 
     @DeleteMapping("/{id}")
+    @AutoLog("Delete User")
     public Result<Boolean> delete(@PathVariable Long id) {
         SysUser user = sysUserService.getById(id);
         if (user != null && "admin".equals(user.getUsername())) {
@@ -56,9 +65,10 @@ public class SysUserController {
         return Result.success(sysUserService.removeById(id));
     }
 
-    @PostMapping("/{id}/roles")
-    public Result<Boolean> assignRoles(@PathVariable Long id, @RequestBody List<Long> roleIds) {
-        sysUserService.assignRoles(id, roleIds);
+    @PostMapping("/{userId}/roles")
+    @AutoLog("Assign Roles")
+    public Result<Boolean> assignRoles(@PathVariable Long userId, @RequestBody List<Long> roleIds) {
+        sysUserService.assignRoles(userId, roleIds);
         return Result.success(true);
     }
 

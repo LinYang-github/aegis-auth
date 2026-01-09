@@ -8,4 +8,6 @@ public interface OidcClientService {
     void updateOidcConfig(Long appId, OidcConfigDto config);
 
     String rotateSecret(Long appId);
+
+    OidcConfigDto getOidcConfigByAppCode(String appCode);
 }

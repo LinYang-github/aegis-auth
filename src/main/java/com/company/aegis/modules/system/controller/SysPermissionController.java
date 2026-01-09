@@ -1,6 +1,7 @@
 package com.company.aegis.modules.system.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.company.aegis.common.annotation.AutoLog;
 import com.company.aegis.common.result.Result;
 import com.company.aegis.modules.system.entity.SysPermission;
 import com.company.aegis.modules.system.service.SysPermissionService;
@@ -16,8 +17,9 @@ public class SysPermissionController {
 
     private final SysPermissionService sysPermissionService;
 
-    @GetMapping
-    public Result<List<SysPermission>> list(@RequestParam(required = false) String appCode) {
+    @GetMapping("/tree")
+    @AutoLog("List Menu Tree")
+    public Result<List<SysPermission>> listTree(@RequestParam(required = false) String appCode) {
         if (appCode != null && !appCode.isEmpty()) {
             // For simplicity, we can't easily pass wrapper to listTree if it doesn't
             // support it.
@@ -28,16 +30,19 @@ public class SysPermissionController {
     }
 
     @PostMapping
+    @AutoLog("Create Menu")
     public Result<Boolean> create(@RequestBody SysPermission permission) {
         return Result.success(sysPermissionService.save(permission));
     }
 
     @PutMapping
+    @AutoLog("Update Menu")
     public Result<Boolean> update(@RequestBody SysPermission permission) {
         return Result.success(sysPermissionService.updateById(permission));
     }
 
     @DeleteMapping("/{id}")
+    @AutoLog("Delete Menu")
     public Result<Boolean> delete(@PathVariable Long id) {
         return Result.success(sysPermissionService.removeById(id));
     }

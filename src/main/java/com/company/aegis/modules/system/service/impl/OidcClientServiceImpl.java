@@ -159,4 +159,15 @@ public class OidcClientServiceImpl implements OidcClientService {
 
         return newSecret;
     }
+
+    @Override
+    public OidcConfigDto getOidcConfigByAppCode(String appCode) {
+        SysApplication app = sysApplicationService
+                .getOne(new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<SysApplication>()
+                        .eq(SysApplication::getCode, appCode));
+        if (app == null) {
+            throw new RuntimeException("App not found");
+        }
+        return getOidcConfig(app.getId());
+    }
 }
